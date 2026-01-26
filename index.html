@@ -282,9 +282,7 @@
             
             // Submit to GitHub Issues via serverless function (token stays secure!)
             // The token is stored in environment variables on the server, not in this code
-            const API_ENDPOINT = '/api/create-issue'; // For Netlify/Vercel
-            // Alternative: Use your serverless function URL if hosted elsewhere
-            // const API_ENDPOINT = 'https://your-function-url.netlify.app/api/create-issue';
+            const API_ENDPOINT = '/.netlify/functions/create-issue'; // Netlify functions path
             
             // Call our serverless function which securely calls GitHub API
             fetch(API_ENDPOINT, {

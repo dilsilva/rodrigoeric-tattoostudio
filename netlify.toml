@@ -4,13 +4,5 @@
   # No build command needed for static site
   publish = "."
 
-# Function configuration
-[functions]
-  # Functions directory (Netlify will look in both api/ and netlify/functions/)
-  directory = "api"
-
-# Redirects (optional - for SPA routing if needed)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Functions are automatically detected in netlify/functions/ directory
+# No need to specify directory - Netlify uses netlify/functions/ by default
