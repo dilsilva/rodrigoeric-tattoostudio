@@ -18,7 +18,16 @@ jobs:
           script: |
             // Get the payload from the repository_dispatch event
             const payload = github.context.payload.client_payload;
+            
+            if (!payload) {
+              throw new Error('No payload received from repository_dispatch');
+            }
+            
             const { name, email, message } = payload;
+            
+            if (!name || !email || !message) {
+              throw new Error('Missing required fields in payload');
+            }
             
             const issueTitle = `New Tattoo Inquiry from ${name}`;
             const issueBody = `## Contact Information
@@ -31,12 +40,28 @@ ${message}
 ---
 *Submitted via website contact form*`;
 
-            const { data } = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: issueTitle,
-              body: issueBody,
-              labels: ['inquiry', 'contact-form']
-            });
+            try {
+              const { data } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['inquiry', 'contact-form'] // Will fail silently if labels don't exist
+              });
 
-            console.log(`Created issue #${data.number}: ${data.html_url}`);
+              console.log(`✅ Created issue #${data.number}: ${data.html_url}`);
+            } catch (error) {
+              // Try again without labels if they don't exist
+              if (error.status === 422 && error.message.includes('label')) {
+                console.log('⚠️ Labels not found, creating issue without labels...');
+                const { data } = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body: issueBody
+                });
+                console.log(`✅ Created issue #${data.number} (without labels): ${data.html_url}`);
+              } else {
+                throw error;
+              }
+            }

@@ -284,7 +284,7 @@
             // This triggers a GitHub Actions workflow that creates the issue
             const GITHUB_OWNER = 'dilsilva'; // Replace with your GitHub username
             const GITHUB_REPO = 'rodrigoeric-tattoostudio'; // Replace with your repo name
-            const GITHUB_TOKEN = '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'; // Replace with a fine-grained token (see setup guide)
+            const GITHUB_TOKEN = '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'; // Replace with a fine-grained token (see setup guide)
             
             // Use GitHub's repository_dispatch API to trigger the workflow
             fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`, {
@@ -300,20 +300,30 @@
                     client_payload: formData
                 })
             })
-            .then(response => {
+            .then(async response => {
+                console.log('Response status:', response.status);
+                
                 if (response.status === 204) {
                     // 204 No Content means success for repository_dispatch
                     showMessage('Thank you for your inquiry! We\'ll get back to you soon. Your submission is being processed.', 'success');
                     form.reset();
                 } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Failed to submit');
-                    });
+                    // Get error details
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch (e) {
+                        errorData = { message: errorText || 'Unknown error' };
+                    }
+                    console.error('API Error:', response.status, errorData);
+                    throw new Error(errorData.message || `HTTP ${response.status}: Failed to submit`);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showMessage('There was an error submitting your inquiry. Please try again or contact us directly.', 'error');
+                console.error('Error details:', error);
+                const errorMsg = error.message || 'There was an error submitting your inquiry. Please try again or contact us directly.';
+                showMessage(errorMsg, 'error');
             })
             .finally(() => {
                 submitButton.disabled = false;
