@@ -19,19 +19,21 @@ body {
     padding: 1.5rem 2rem;
     pointer-events: none; /* Allow clicks to pass through */
     transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header-logo {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     pointer-events: auto; /* Re-enable pointer events for logo */
 }
 
 .logo-img {
-    height: 60px;
+    height: 150px;
     width: auto;
-    max-width: 200px;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -355,8 +357,8 @@ html {
     }
     
     .logo-img {
-        height: 45px;
-        max-width: 150px;
+        height: 150px;
+        width: auto;
     }
     
     .video-section {
