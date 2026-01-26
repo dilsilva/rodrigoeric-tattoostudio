@@ -280,44 +280,32 @@
                 message: message
             };
             
-            // Submit to GitHub Issues via repository_dispatch (all within GitHub!)
-            // This triggers a GitHub Actions workflow that creates the issue
-            const GITHUB_OWNER = 'dilsilva'; // Replace with your GitHub username
-            const GITHUB_REPO = 'rodrigoeric-tattoostudio'; // Replace with your repo name
-            const GITHUB_TOKEN = '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'; // Replace with a fine-grained token (see setup guide)
+            // Submit to GitHub Issues via serverless function (token stays secure!)
+            // The token is stored in environment variables on the server, not in this code
+            const API_ENDPOINT = '/api/create-issue'; // For Netlify/Vercel
+            // Alternative: Use your serverless function URL if hosted elsewhere
+            // const API_ENDPOINT = 'https://your-function-url.netlify.app/api/create-issue';
             
-            // Use GitHub's repository_dispatch API to trigger the workflow
-            fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`, {
+            // Call our serverless function which securely calls GitHub API
+            fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json',
-                    'User-Agent': 'Tattoo-Studio-Contact-Form'
                 },
-                body: JSON.stringify({
-                    event_type: 'contact-form-submission',
-                    client_payload: formData
-                })
+                body: JSON.stringify(formData)
             })
             .then(async response => {
                 console.log('Response status:', response.status);
+                const data = await response.json();
                 
-                if (response.status === 204) {
-                    // 204 No Content means success for repository_dispatch
-                    showMessage('Thank you for your inquiry! We\'ll get back to you soon. Your submission is being processed.', 'success');
+                if (response.ok && data.success) {
+                    // Success - issue created
+                    showMessage('Thank you for your inquiry! We\'ll get back to you soon. Issue #' + data.issueNumber + ' has been created.', 'success');
                     form.reset();
                 } else {
-                    // Get error details
-                    const errorText = await response.text();
-                    let errorData;
-                    try {
-                        errorData = JSON.parse(errorText);
-                    } catch (e) {
-                        errorData = { message: errorText || 'Unknown error' };
-                    }
-                    console.error('API Error:', response.status, errorData);
-                    throw new Error(errorData.message || `HTTP ${response.status}: Failed to submit`);
+                    // Error from API
+                    console.error('API Error:', response.status, data);
+                    throw new Error(data.error || data.message || `HTTP ${response.status}: Failed to submit`);
                 }
             })
             .catch(error => {
