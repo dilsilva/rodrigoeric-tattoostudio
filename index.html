@@ -23,10 +23,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/scroll-out/dist/scroll-out.min.js"></script>
 </head>
-<body class="font-sans bg-black text-white overflow-x-hidden">
+<body class="bg-black text-white overflow-x-hidden">
+    <!-- Fixed Header Logo -->
+    <header class="fixed-header">
+        <div class="header-logo">
+            <img src="img/logo.PNG" alt="Rodrigo Eric Logo" class="logo-img">
+        </div>
+    </header>
+
     <!-- Hero Section -->
     <section class="hero h-screen relative flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 bg-black/60 z-10"></div>
@@ -38,6 +45,24 @@
         </div>
         <div class="absolute bottom-10 left-0 right-0 text-center z-20">
             <div class="scroll-indicator animate-bounce"></div>
+        </div>
+    </section>
+
+    <!-- Video Background Section 1 -->
+    <!-- 
+        To add videos: Create a 'video' folder and add your MP4 files:
+        - video/divider-1.mp4
+        - video/divider-2.mp4  
+        - video/divider-3.mp4
+        Recommended: Short looping videos (5-15 seconds), optimized for web (H.264 codec)
+        If videos aren't available, the section will show a gradient background as fallback
+    -->
+    <section class="video-section">
+        <div class="video-background">
+            <video autoplay loop muted playsinline class="video-element" onerror="this.style.display='none';">
+                <source src="video/divider-1.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
         </div>
     </section>
 
@@ -56,6 +81,16 @@
         </div>
     </section>
 
+    <!-- Video Background Section 2 -->
+    <section class="video-section">
+        <div class="video-background">
+            <video autoplay loop muted playsinline class="video-element" onerror="this.style.display='none';">
+                <source src="video/divider-1.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+    </section>
+
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio py-20 bg-gray-900">
         <div class="container mx-auto px-6">
@@ -63,17 +98,27 @@
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="portfolio-item" data-scroll>
                     <img src="img/IMG_5506.JPG" alt="Tattoo Work 1" class="w-full h-96 object-cover rounded-lg">
-                    <h3 class="text-xl font-bold mt-4">Black & Grey Realism</h3>
+                    <h3 class="text-xl font-bold mt-4">Colorful Neotraditional</h3>
                 </div>
                 <div class="portfolio-item" data-scroll>
                     <img src="img/IMG_9856_jpg.JPG" alt="Tattoo Work 2" class="w-full h-96 object-cover rounded-lg">
-                    <h3 class="text-xl font-bold mt-4">Japanese Traditional</h3>
+                    <h3 class="text-xl font-bold mt-4">Highly Detailed Black & White</h3>
                 </div>
                 <div class="portfolio-item" data-scroll>
                     <img src="img/IMG_9875.JPG" alt="Tattoo Work 3" class="w-full h-96 object-cover rounded-lg">
-                    <h3 class="text-xl font-bold mt-4">Geometric Patterns</h3>
+                    <h3 class="text-xl font-bold mt-4">Japanese Traditional</h3>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Video Background Section 3 -->
+    <section class="video-section">
+        <div class="video-background">
+            <video autoplay loop muted playsinline class="video-element" onerror="this.style.display='none';">
+                <source src="video/divider-1.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
         </div>
     </section>
 
@@ -123,6 +168,75 @@
                     console.warn('ScrollOut initialization failed:', e);
                 }
             }
+            
+            // Logo fade effect on scroll
+            const header = document.querySelector('.fixed-header');
+            const logo = document.querySelector('.logo-img');
+            let lastScroll = 0;
+            
+            // Parallax effect for video sections
+            const videoSections = document.querySelectorAll('.video-background');
+            let ticking = false;
+            
+            function updateParallax() {
+                const scrollY = window.pageYOffset;
+                
+                videoSections.forEach(videoBg => {
+                    const videoSection = videoBg.closest('.video-section');
+                    if (!videoSection) return;
+                    
+                    const rect = videoSection.getBoundingClientRect();
+                    const sectionTop = rect.top + scrollY;
+                    
+                    // Calculate if section is in viewport
+                    const viewportBottom = scrollY + window.innerHeight;
+                    const sectionBottom = sectionTop + videoSection.offsetHeight;
+                    
+                    // Only apply parallax when section is visible
+                    if (sectionBottom > scrollY && sectionTop < viewportBottom) {
+                        // Parallax speed (0.3 = moves slower than scroll, creating depth effect)
+                        const parallaxSpeed = 0.3;
+                        const translateY = (scrollY - sectionTop) * parallaxSpeed;
+                        
+                        videoBg.style.transform = `translateY(${translateY}px)`;
+                    }
+                });
+                
+                ticking = false;
+            }
+            
+            function requestParallaxTick() {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateParallax);
+                    ticking = true;
+                }
+            }
+            
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                
+                // Fade logo slightly when scrolling down
+                if (currentScroll > 100) {
+                    logo.style.opacity = '0.8';
+                } else {
+                    logo.style.opacity = '1';
+                }
+                
+                // Hide/show header on scroll direction
+                if (currentScroll > lastScroll && currentScroll > 200) {
+                    header.style.opacity = '0.7';
+                } else {
+                    header.style.opacity = '1';
+                }
+                
+                // Update parallax effect (optimized with requestAnimationFrame)
+                requestParallaxTick();
+                
+                lastScroll = currentScroll;
+            });
+            
+            // Initial parallax calculation
+            updateParallax();
         });
 
         // Form handling

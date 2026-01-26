@@ -1,15 +1,112 @@
 /* Custom Styles for Tattoo Studio Website */
 
-/* Font Family Setup */
+/* Font Family Setup - Matching reference site style */
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: white;
     background-color: black;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+/* Fixed Header Logo */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1.5rem 2rem;
+    pointer-events: none; /* Allow clicks to pass through */
+    transition: opacity 0.3s ease;
+}
+
+.header-logo {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    pointer-events: auto; /* Re-enable pointer events for logo */
+}
+
+.logo-img {
+    height: 60px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.logo-img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Video Background Sections */
+.video-section {
+    position: relative;
+    width: 100%;
+    height: 60vh; /* Reduced height */
+    overflow: hidden;
+}
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120%; /* Taller than container for parallax effect */
+    z-index: 1;
+    will-change: transform; /* Optimize for animations */
+}
+
+.video-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(100%); /* Black and white filter */
+    transition: filter 0.3s ease;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Fallback for video sections if video doesn't load */
+.video-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    z-index: 0;
 }
 
 /* Ensure content is visible */
 h1, h2, h3, p, a, label {
     color: white;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+p {
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+}
+
+a {
+    font-weight: 400;
+    letter-spacing: 0.01em;
 }
 
 /* Container fallback */
@@ -20,7 +117,28 @@ h1, h2, h3, p, a, label {
 }
 
 h1, h2, h3 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 3.5rem;
+    letter-spacing: 0.08em;
+    font-weight: 900;
+}
+
+h2 {
+    font-size: 2.5rem;
+    letter-spacing: 0.06em;
+}
+
+h3 {
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    font-weight: 700;
 }
 
 /* Button Styles */
@@ -30,14 +148,15 @@ h1, h2, h3 {
     padding: 1rem 2.5rem;
     border-radius: 50px;
     text-decoration: none;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     transition: all 0.3s ease;
     display: inline-block;
     border: none;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .btn-primary:hover {
@@ -51,12 +170,14 @@ h1, h2, h3 {
     padding: 1rem 2.5rem;
     border-radius: 50px;
     text-decoration: none;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     transition: all 0.3s ease;
     display: inline-block;
     border: 2px solid white;
+    font-size: 0.85rem;
 }
 
 .btn-secondary:hover {
@@ -66,6 +187,10 @@ h1, h2, h3 {
 }
 
 /* Hero Section */
+.hero {
+    padding-top: 100px; /* Space for fixed header */
+}
+
 .hero-bg {
     animation: slowZoom 20s ease-in-out infinite alternate;
     background-size: cover;
@@ -159,9 +284,20 @@ img {
 input[type="text"],
 input[type="email"],
 textarea {
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
     transition: all 0.3s ease;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+label {
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
 }
 
 input[type="text"]:focus,
@@ -212,5 +348,18 @@ html {
     .hero-bg {
         background-size: cover;
         background-position: center;
+    }
+    
+    .fixed-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .logo-img {
+        height: 45px;
+        max-width: 150px;
+    }
+    
+    .video-section {
+        height: 50vh; /* Shorter on mobile */
     }
 }
