@@ -45,8 +45,8 @@ exports.handler = async (event, context) => {
         // Get GitHub configuration from environment variables
         // These are set in your hosting platform's settings
         const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-        const GITHUB_OWNER = process.env.GITHUB_OWNER || 'dilsilva';
-        const GITHUB_REPO = process.env.GITHUB_REPO || 'rodrigoeric-tattoostudio';
+        const GITHUB_OWNER = process.env.GITHUB_OWNER;
+        const GITHUB_REPO = process.env.GITHUB_REPO;
 
         if (!GITHUB_TOKEN) {
             return {
