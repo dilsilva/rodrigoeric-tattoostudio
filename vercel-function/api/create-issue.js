@@ -1,60 +1,20 @@
-// Vercel Serverless Function - With specific origin CORS (more secure)
-// Use this version if you want to restrict CORS to only your GitHub Pages domain
-
-// Allowed origins - add your domains here
-const ALLOWED_ORIGINS = [
-    'https://dilsilva.github.io',
-    'https://dilsilva.github.io/rodrigoeric-tattoostudio', // If you have a subpath
-    'http://localhost:8000', // For local testing
-];
-
-// Helper function to extract origin from referer
-function extractOrigin(referer) {
-    if (!referer) return null;
-    try {
-        const url = new URL(referer);
-        return url.origin;
-    } catch {
-        return null;
-    }
-}
-
-// Helper function to set CORS headers with origin checking
-function setCORSHeaders(res, origin) {
-    // Normalize origin - extract from referer if needed
-    let normalizedOrigin = origin;
-    if (origin && !origin.startsWith('http')) {
-        normalizedOrigin = extractOrigin(origin);
-    }
-    
-    // Check if origin is allowed
-    if (normalizedOrigin && ALLOWED_ORIGINS.includes(normalizedOrigin)) {
-        res.setHeader('Access-Control-Allow-Origin', normalizedOrigin);
-    } else {
-        // Use wildcard for CORS - works for all origins
-        res.setHeader('Access-Control-Allow-Origin', '*');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-}
+// Simple Vercel Function with CORS - Use this to test
+// This version uses wildcard CORS to ensure it works
 
 export default async function handler(req, res) {
-    // Get the origin from the request - prefer origin header, fallback to referer
-    const origin = req.headers.origin || extractOrigin(req.headers.referer);
-    
-    // Set CORS headers FIRST - before any other logic
-    setCORSHeaders(res, origin);
+    // Set CORS headers FIRST - before anything else
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400');
 
-    // Handle CORS preflight - MUST be first, before any other checks
+    // Handle CORS preflight - MUST be first
     if (req.method === 'OPTIONS') {
-        // Return 200 with CORS headers already set
-        return res.status(200).json({ message: 'OK' });
+        return res.status(200).end();
     }
 
     // Only allow POST requests
     if (req.method !== 'POST') {
-        res.setHeader('Content-Type', 'application/json');
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
@@ -64,7 +24,6 @@ export default async function handler(req, res) {
 
         // Validate required fields
         if (!name || !email || !message) {
-            res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
@@ -75,7 +34,6 @@ export default async function handler(req, res) {
 
         // Validate environment variables
         if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
-            res.setHeader('Content-Type', 'application/json');
             return res.status(500).json({ 
                 error: 'Server configuration error. Please configure GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO in Vercel environment variables.' 
             });
@@ -112,7 +70,6 @@ ${message}
         if (!response.ok) {
             const errorData = await response.text();
             console.error('GitHub API Error:', errorData);
-            res.setHeader('Content-Type', 'application/json');
             return res.status(response.status).json({ 
                 error: 'Failed to create GitHub issue',
                 details: errorData
@@ -120,9 +77,6 @@ ${message}
         }
 
         const issueData = await response.json();
-
-        // Set content type for success response
-        res.setHeader('Content-Type', 'application/json');
 
         return res.status(200).json({
             success: true,
@@ -133,7 +87,6 @@ ${message}
 
     } catch (error) {
         console.error('Error creating GitHub issue:', error);
-        res.setHeader('Content-Type', 'application/json');
         return res.status(500).json({ 
             error: 'Internal server error',
             message: error.message
