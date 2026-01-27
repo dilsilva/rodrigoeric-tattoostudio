@@ -1,12 +1,20 @@
 // Vercel Serverless Function - Standalone (no site deployment needed)
 // Deploy just this function to Vercel, keep your site on GitHub Pages
 
+// Helper function to set CORS headers
+function setCORSHeaders(res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+}
+
 export default async function handler(req, res) {
+    // Set CORS headers for all responses
+    setCORSHeaders(res);
+
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
         return res.status(200).end();
     }
 
@@ -21,6 +29,7 @@ export default async function handler(req, res) {
 
         // Validate required fields
         if (!name || !email || !message) {
+            res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
@@ -31,6 +40,7 @@ export default async function handler(req, res) {
 
         // Validate environment variables
         if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
+            res.setHeader('Content-Type', 'application/json');
             return res.status(500).json({ 
                 error: 'Server configuration error. Please configure GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO in Vercel environment variables.' 
             });
@@ -67,6 +77,7 @@ ${message}
         if (!response.ok) {
             const errorData = await response.text();
             console.error('GitHub API Error:', errorData);
+            res.setHeader('Content-Type', 'application/json');
             return res.status(response.status).json({ 
                 error: 'Failed to create GitHub issue',
                 details: errorData
@@ -75,8 +86,7 @@ ${message}
 
         const issueData = await response.json();
 
-        // Set CORS headers
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        // Set content type for success response
         res.setHeader('Content-Type', 'application/json');
 
         return res.status(200).json({
@@ -88,6 +98,7 @@ ${message}
 
     } catch (error) {
         console.error('Error creating GitHub issue:', error);
+        res.setHeader('Content-Type', 'application/json');
         return res.status(500).json({ 
             error: 'Internal server error',
             message: error.message
