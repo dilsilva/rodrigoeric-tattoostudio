@@ -8,31 +8,48 @@ const ALLOWED_ORIGINS = [
     'http://localhost:8000', // For local testing
 ];
 
+// Helper function to extract origin from referer
+function extractOrigin(referer) {
+    if (!referer) return null;
+    try {
+        const url = new URL(referer);
+        return url.origin;
+    } catch {
+        return null;
+    }
+}
+
 // Helper function to set CORS headers with origin checking
 function setCORSHeaders(res, origin) {
+    // Normalize origin - extract from referer if needed
+    let normalizedOrigin = origin;
+    if (origin && !origin.startsWith('http')) {
+        normalizedOrigin = extractOrigin(origin);
+    }
+    
     // Check if origin is allowed
-    if (origin && ALLOWED_ORIGINS.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
+    if (normalizedOrigin && ALLOWED_ORIGINS.includes(normalizedOrigin)) {
+        res.setHeader('Access-Control-Allow-Origin', normalizedOrigin);
     } else {
-        // Fallback to wildcard if origin not in list (or no origin header)
+        // Use wildcard for CORS - works for all origins
         res.setHeader('Access-Control-Allow-Origin', '*');
     }
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
 
 export default async function handler(req, res) {
-    // Get the origin from the request
-    const origin = req.headers.origin || req.headers.referer;
+    // Get the origin from the request - prefer origin header, fallback to referer
+    const origin = req.headers.origin || extractOrigin(req.headers.referer);
     
-    // Set CORS headers for all responses
+    // Set CORS headers FIRST - before any other logic
     setCORSHeaders(res, origin);
 
-    // Handle CORS preflight
+    // Handle CORS preflight - MUST be first, before any other checks
     if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+        // Return 200 with CORS headers already set
+        return res.status(200).json({ message: 'OK' });
     }
 
     // Only allow POST requests
