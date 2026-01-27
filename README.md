@@ -1,147 +1,354 @@
-# INK MASTER - Tattoo Studio Website
+# Rodrigo Eric - Tattoo Studio Website
 
-A modern, responsive website for a tattoo artist portfolio, built with HTML, CSS, and JavaScript.
+A modern, professional portfolio website for tattoo artist Rodrigo Eric, featuring a sleek design inspired by high-end tattoo studios like Bang Bang NYC. The site showcases artwork, provides information about the artist, and includes a contact form that automatically creates GitHub Issues for inquiries.
 
-## Features
+## 🌐 Live Website
 
-- 🎨 Modern, responsive design
-- 📱 Mobile-friendly layout
-- ✨ Smooth scroll animations
-- 📧 Contact form with validation
-- 🖼️ Portfolio showcase section
-- ⚡ Fast loading with CDN resources
+The website is hosted on **GitHub Pages** and can be accessed at:
+```
+https://dilsilva.github.io/rodrigoeric-tattoostudio/
+```
 
-## Project Structure
+## ✨ Features
+
+### Design & User Experience
+- **Modern, Dark Theme**: Sleek black background with white typography
+- **Fixed Header Logo**: Logo stays visible while scrolling (similar to Bang Bang NYC)
+- **Full-Screen Hero Section**: Immersive landing with background image and call-to-action
+- **Video Background Dividers**: Animated video sections between content (black & white filter, parallax effect)
+- **Smooth Scroll Animations**: Elements fade in as you scroll using ScrollOut.js
+- **Responsive Design**: Fully optimized for mobile, tablet, and desktop
+- **Parallax Effects**: Video backgrounds scroll at different speeds for depth
+
+### Sections
+1. **Hero Section**: Full-screen introduction with animated background
+2. **About Section**: Artist information and profile image
+3. **Portfolio Gallery**: Showcase of tattoo work in different styles
+4. **Contact Form**: Secure form that creates GitHub Issues automatically
+
+### Contact Form Integration
+- **GitHub Issues Integration**: Form submissions automatically create GitHub Issues
+- **Secure Serverless Function**: Token stored securely in Vercel environment variables
+- **Input Validation**: Client-side and server-side validation
+- **Security**: XSS prevention, input sanitization, security headers
+
+## 🏗️ Architecture & Implementation
+
+### Frontend (GitHub Pages)
+- **HTML5**: Semantic markup with accessibility features
+- **CSS3**: Custom styles with animations and responsive design
+- **JavaScript**: Form handling, scroll animations, parallax effects
+- **Tailwind CSS**: Utility-first CSS framework (via CDN)
+- **Source Sans Pro**: Typography matching reference site aesthetic
+- **ScrollOut.js**: Scroll-triggered animations
+
+### Backend (Vercel Serverless Function)
+- **Serverless Architecture**: Function deployed on Vercel
+- **GitHub API Integration**: Creates issues automatically
+- **Security**: Input validation, sanitization, error handling
+- **CORS**: Properly configured for cross-origin requests
+
+### Key Technologies
+- **Hosting**: GitHub Pages (frontend) + Vercel (serverless function)
+- **Form Processing**: Vercel Serverless Function → GitHub Issues API
+- **Security**: Environment variables, input validation, CSP headers
+- **Animations**: CSS animations + ScrollOut.js
+- **Video**: HTML5 video with parallax scrolling
+
+## 📁 Project Structure
 
 ```
 rodrigoeric-tattoostudio/
-├── index.html      # Main HTML file
-├── style.css       # Custom styles
-└── README.md       # This file
+├── index.html                    # Main HTML file
+├── style.css                     # Custom styles and animations
+├── img/                          # Image assets
+│   ├── logo.PNG                  # Fixed header logo
+│   ├── background-1.JPG          # Hero section background
+│   ├── profile.jpeg              # About section image
+│   └── IMG_*.JPG                 # Portfolio images
+├── video/                        # Video assets for dividers
+│   └── divider-1.mp4             # Looping video backgrounds
+├── vercel-function/              # Serverless function (deployed separately)
+│   └── api/
+│       └── create-issue.js       # GitHub Issues API integration
+├── .github/
+│   ├── workflows/
+│   │   └── create-issue.yml      # GitHub Actions workflow (backup)
+│   └── dependabot.yml            # Automated security updates
+├── .gitignore                    # Git ignore rules
+├── SECURITY.md                   # Security documentation
+├── SECURITY_AUDIT.md             # Security audit checklist
+├── CODE_QUALITY.md               # Code quality standards
+└── README.md                     # This file
 ```
 
-## Deployment to GitHub Pages
+## 🚀 How It Works
 
-### Step 1: Push Your Code to GitHub
+### User Flow
+1. **User visits website** → GitHub Pages serves static HTML/CSS/JS
+2. **User fills contact form** → Client-side validation
+3. **Form submission** → POST request to Vercel serverless function
+4. **Serverless function** → Validates input, sanitizes data, creates GitHub Issue
+5. **GitHub Issue created** → You receive notification in your repository
+6. **User sees success message** → Confirmation displayed
 
-1. **Initialize Git** (if not already done):
+### Technical Flow
+```
+Browser (GitHub Pages)
+    ↓
+POST /api/create-issue
+    ↓
+Vercel Serverless Function
+    ├── Input Validation
+    ├── Input Sanitization
+    ├── Security Headers
+    └── GitHub API Call
+        ↓
+GitHub Issues API
+    ↓
+New Issue Created
+```
+
+## 🔧 Setup & Deployment
+
+### Prerequisites
+- GitHub account
+- Vercel account (free tier works)
+- GitHub repository
+
+### Step 1: Deploy Frontend (GitHub Pages)
+
+1. **Push code to GitHub:**
    ```bash
    git init
    git add .
-   git commit -m "Initial commit: Tattoo studio website"
-   ```
-
-2. **Create a GitHub Repository**:
-   - Go to [GitHub](https://github.com) and create a new repository
-   - Name it `rodrigoeric-tattoostudio` (or any name you prefer)
-   - **Do NOT** initialize with README, .gitignore, or license
-
-3. **Push Your Code**:
-   ```bash
+   git commit -m "Initial commit"
    git remote add origin https://github.com/YOUR_USERNAME/rodrigoeric-tattoostudio.git
    git branch -M main
    git push -u origin main
    ```
-   Replace `YOUR_USERNAME` with your actual GitHub username.
 
-### Step 2: Enable GitHub Pages
+2. **Enable GitHub Pages:**
+   - Go to repository → Settings → Pages
+   - Source: `main` branch, `/ (root)` folder
+   - Save
 
-1. Go to your repository on GitHub
-2. Click on **Settings** (top menu)
-3. Scroll down to **Pages** in the left sidebar
-4. Under **Source**, select:
-   - **Branch**: `main`
-   - **Folder**: `/ (root)`
-5. Click **Save**
-
-### Step 3: Access Your Website
-
-- Your site will be available at:
-  ```
-  https://YOUR_USERNAME.github.io/rodrigoeric-tattoostudio/
-  ```
-- It may take a few minutes for the site to be live after enabling Pages
-- You can find the exact URL in the **Pages** settings section
-
-### Step 4: Custom Domain (Optional)
-
-If you have a custom domain:
-
-1. In the **Pages** settings, enter your custom domain
-2. Add a `CNAME` file to your repository root with your domain name
-3. Configure DNS records with your domain provider
-
-## Local Development
-
-To view the website locally:
-
-1. **Simple Method**: Open `index.html` directly in your browser
-2. **Using a Local Server** (recommended):
-   ```bash
-   # Using Python 3
-   python3 -m http.server 8000
-   
-   # Using Node.js (if you have http-server installed)
-   npx http-server
-   
-   # Using PHP
-   php -S localhost:8000
+3. **Your site is live at:**
    ```
-3. Open `http://localhost:8000` in your browser
+   https://YOUR_USERNAME.github.io/rodrigoeric-tattoostudio/
+   ```
 
-## Customization
+### Step 2: Deploy Serverless Function (Vercel)
 
-### Update Images
+1. **Create Vercel account:**
+   - Go to [vercel.com](https://vercel.com)
+   - Sign up (free tier works)
 
-Replace the placeholder images (`http://static.photos/...`) with your actual images:
+2. **Deploy function:**
+   - Create new project
+   - Upload `vercel-function/` folder
+   - Or connect GitHub repository and deploy
 
-- **Hero background**: Line 19 in `index.html`
-- **About section**: Line 34 in `index.html`
-- **Portfolio images**: Lines 51, 55, 59 in `index.html`
+3. **Configure environment variables:**
+   - Go to Project → Settings → Environment Variables
+   - Add:
+     - `GITHUB_TOKEN`: Your fine-grained GitHub token
+     - `GITHUB_OWNER`: Your GitHub username (e.g., `dilsilva`)
+     - `GITHUB_REPO`: Repository name (e.g., `rodrigoeric-tattoostudio`)
+
+4. **Get production URL:**
+   - After deployment, note your production URL
+   - Format: `https://YOUR-PROJECT-NAME.vercel.app`
+
+5. **Update HTML:**
+   - Edit `index.html`, line 288
+   - Update `API_ENDPOINT` with your Vercel production URL:
+   ```javascript
+   const API_ENDPOINT = 'https://YOUR-PROJECT-NAME.vercel.app/api/create-issue';
+   ```
+
+6. **Push update:**
+   ```bash
+   git add index.html
+   git commit -m "Update API endpoint"
+   git push
+   ```
+
+### Step 3: Create GitHub Token
+
+1. **Generate fine-grained token:**
+   - GitHub → Settings → Developer settings → Fine-grained tokens
+   - Generate new token
+   - Repository access: Only `rodrigoeric-tattoostudio`
+   - Permissions:
+     - **Actions**: Read and write
+     - **Contents**: Read-only
+     - **Issues**: Write
+   - Copy token
+
+2. **Add to Vercel:**
+   - Paste token in Vercel environment variables as `GITHUB_TOKEN`
+
+### Step 4: Create GitHub Labels (Optional)
+
+1. Go to repository → Issues → Labels
+2. Create labels:
+   - `inquiry`
+   - `contact-form`
+
+## 🎨 Design Features
+
+### Typography
+- **Font**: Source Sans Pro (matching reference site)
+- **Headings**: Uppercase, bold, increased letter spacing
+- **Body**: Regular weight, optimized line-height
+
+### Visual Effects
+- **Fixed Logo**: Stays at top while scrolling
+- **Video Dividers**: Full-screen video sections with:
+  - Black & white filter
+  - Parallax scrolling effect
+  - Reduced height (60vh)
+- **Smooth Animations**: Scroll-triggered fade-ins
+- **Hover Effects**: Portfolio items and buttons
+
+### Color Scheme
+- **Background**: Black (#000000)
+- **Text**: White
+- **Accents**: Gradient buttons (pink to red)
+- **Overlays**: Semi-transparent black overlays
+
+## 🔒 Security Features
+
+### Implemented
+- ✅ Input validation (client + server)
+- ✅ Input sanitization (XSS prevention)
+- ✅ Security headers (CSP, X-Frame-Options, etc.)
+- ✅ Secure token storage (environment variables)
+- ✅ Error handling (generic messages)
+- ✅ CORS configuration
+- ✅ Length limits on all inputs
+
+### Documentation
+- See `SECURITY.md` for detailed security practices
+- See `SECURITY_AUDIT.md` for security checklist
+
+## 📝 Customization
 
 ### Update Content
+- **Hero text**: Edit `index.html` lines 49-50
+- **About section**: Edit `index.html` lines 83-86
+- **Portfolio items**: Edit `index.html` lines 106-117
+- **Form labels**: Edit `index.html` lines 138-167
 
-- Edit text directly in `index.html`
-- Modify styles in `style.css`
-- Update colors by changing the CSS variables or Tailwind classes
+### Update Images
+- Replace images in `img/` folder
+- Update paths in `index.html`
+- Recommended formats: JPG for photos, PNG for logos
 
-### Form Submission
+### Update Videos
+- Add MP4 files to `video/` folder
+- Update `src` attributes in video sections
+- Recommended: 5-15 second loops, H.264 codec, optimized for web
 
-The contact form currently shows a success message but doesn't actually send emails. To enable form submission, you can:
+### Styling
+- Edit `style.css` for custom styles
+- Tailwind classes can be modified in HTML
+- Color scheme defined in CSS variables
 
-1. **Use Formspree** (free tier available):
-   - Sign up at [formspree.io](https://formspree.io)
-   - Get your form endpoint
-   - Update the form action in `index.html`
+## 🛠️ Technologies Used
 
-2. **Use Netlify Forms** (if deploying to Netlify):
-   - Add `netlify` attribute to the form
-   - Netlify will handle submissions automatically
+### Frontend
+- **HTML5**: Structure and semantics
+- **CSS3**: Custom styles, animations, responsive design
+- **JavaScript (ES6+)**: Form handling, animations, API calls
+- **Tailwind CSS**: Utility-first CSS framework
+- **Source Sans Pro**: Typography
+- **ScrollOut.js**: Scroll animations
 
-3. **Use EmailJS** (client-side email service):
-   - Sign up at [emailjs.com](https://www.emailjs.com)
-   - Add their script and configure
+### Backend
+- **Vercel Serverless Functions**: API endpoint
+- **GitHub API**: Issue creation
+- **Node.js**: Runtime environment
 
-## Browser Support
+### Hosting
+- **GitHub Pages**: Static site hosting
+- **Vercel**: Serverless function hosting
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
+## 📊 Performance
 
-## Technologies Used
+### Optimizations
+- CDN resources (Tailwind, fonts, scripts)
+- Optimized images (consider WebP conversion)
+- Lazy loading ready
+- Minimal JavaScript footprint
 
-- **HTML5**: Structure
-- **CSS3**: Custom styles
-- **Tailwind CSS**: Utility-first CSS framework (via CDN)
-- **JavaScript**: Form validation and animations
-- **ScrollOut.js**: Scroll animations library
+### Recommendations
+- Compress images before uploading
+- Consider WebP format for better compression
+- Add lazy loading for below-fold images
 
-## License
+## 🌍 Browser Support
+
+- ✅ Chrome (latest)
+- ✅ Firefox (latest)
+- ✅ Safari (latest)
+- ✅ Edge (latest)
+- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+
+## 📚 Documentation
+
+- **SECURITY.md**: Security best practices and implementation
+- **SECURITY_AUDIT.md**: Security audit checklist
+- **CODE_QUALITY.md**: Code quality standards and best practices
+- **IMPROVEMENTS_SUMMARY.md**: Summary of improvements made
+
+## 🔄 Maintenance
+
+### Regular Tasks
+- Monitor form submissions in GitHub Issues
+- Review function logs in Vercel dashboard
+- Rotate GitHub token every 90 days
+- Update dependencies (Dependabot configured)
+
+### Updates
+- Push changes to GitHub → Auto-deploys to GitHub Pages
+- Update Vercel function → Auto-deploys to Vercel
+- Environment variables → Update in Vercel dashboard
+
+## 🐛 Troubleshooting
+
+### Form Not Working
+1. Check Vercel function logs
+2. Verify environment variables are set
+3. Check browser console for errors
+4. Verify API endpoint URL is correct
+
+### CORS Errors
+1. Ensure CORS headers are set in function
+2. Check function is deployed correctly
+3. Clear browser cache
+
+### Issues Not Creating
+1. Verify GitHub token has correct permissions
+2. Check token hasn't expired
+3. Review Vercel function logs
+4. Ensure labels exist in repository
+
+## 📄 License
 
 This project is open source and available for personal use.
 
-## Support
+## 👤 Author
 
-For issues or questions, please open an issue on the GitHub repository.
+**Rodrigo Eric** - Professional Tattoo Artist
+
+## 🙏 Acknowledgments
+
+- Design inspired by [Bang Bang NYC](https://www.bangbangforever.com/)
+- Typography: Source Sans Pro (Adobe)
+- Icons and animations: Custom implementation
+
+---
+
+**Status**: ✅ Production Ready | 🔒 Secure | 📱 Responsive | ⚡ Fast

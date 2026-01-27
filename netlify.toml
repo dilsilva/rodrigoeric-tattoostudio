@@ -1,8 +1,0 @@
-# Netlify configuration file
-
-[build]
-  # No build command needed for static site
-  publish = "."
-
-# Functions are automatically detected in netlify/functions/ directory
-# No need to specify directory - Netlify uses netlify/functions/ by default

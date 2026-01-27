@@ -8,6 +8,13 @@
     <meta name="keywords" content="tattoo artist, custom tattoos, black and grey realism, Japanese traditional tattoos, geometric tattoos">
     <meta name="author" content="Rodrigo Eric">
     
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://rodrigoeric-tattoostudio.vercel.app;">
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Rodrigo Eric | Tattoo Artist">
@@ -129,15 +136,47 @@
             <form class="contact-form grid md:grid-cols-2 gap-6" data-scroll id="contactForm">
                 <div>
                     <label for="name" class="block mb-2">Name *</label>
-                    <input type="text" id="name" name="name" required class="w-full p-3 bg-gray-800 rounded" placeholder="Your name">
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        required 
+                        maxlength="100"
+                        minlength="1"
+                        autocomplete="name"
+                        class="w-full p-3 bg-gray-800 rounded" 
+                        placeholder="Your name"
+                        aria-required="true"
+                        aria-label="Your full name">
                 </div>
                 <div>
                     <label for="email" class="block mb-2">Email *</label>
-                    <input type="email" id="email" name="email" required class="w-full p-3 bg-gray-800 rounded" placeholder="your.email@example.com">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        maxlength="255"
+                        autocomplete="email"
+                        class="w-full p-3 bg-gray-800 rounded" 
+                        placeholder="your.email@example.com"
+                        aria-required="true"
+                        aria-label="Your email address">
                 </div>
                 <div class="md:col-span-2">
                     <label for="message" class="block mb-2">Tattoo Idea *</label>
-                    <textarea id="message" name="message" rows="5" required class="w-full p-3 bg-gray-800 rounded" placeholder="Tell us about your tattoo idea..."></textarea>
+                    <textarea 
+                        id="message" 
+                        name="message" 
+                        rows="5" 
+                        required 
+                        maxlength="5000"
+                        minlength="10"
+                        class="w-full p-3 bg-gray-800 rounded" 
+                        placeholder="Tell us about your tattoo idea (minimum 10 characters)..."
+                        aria-required="true"
+                        aria-label="Description of your tattoo idea"></textarea>
+                    <p class="text-sm text-gray-400 mt-1">Minimum 10 characters, maximum 5000 characters</p>
                 </div>
                 <div class="md:col-span-2">
                     <div id="formMessage" class="hidden mb-4 p-4 rounded"></div>
@@ -251,10 +290,16 @@
             const formMessage = document.getElementById('formMessage');
             const submitButton = form.querySelector('button[type="submit"]');
             
-            // Get form values
+            // Get form values and sanitize
             const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const message = document.getElementById('message').value.trim();
+            
+            // Validation with length limits
+            const MAX_NAME_LENGTH = 100;
+            const MAX_EMAIL_LENGTH = 255;
+            const MAX_MESSAGE_LENGTH = 5000;
+            const MIN_MESSAGE_LENGTH = 10;
             
             // Basic validation
             if (!name || !email || !message) {
@@ -262,8 +307,29 @@
                 return;
             }
             
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // Length validation
+            if (name.length > MAX_NAME_LENGTH) {
+                showMessage(`Name must be less than ${MAX_NAME_LENGTH} characters.`, 'error');
+                return;
+            }
+            
+            if (email.length > MAX_EMAIL_LENGTH) {
+                showMessage(`Email must be less than ${MAX_EMAIL_LENGTH} characters.`, 'error');
+                return;
+            }
+            
+            if (message.length < MIN_MESSAGE_LENGTH) {
+                showMessage(`Message must be at least ${MIN_MESSAGE_LENGTH} characters.`, 'error');
+                return;
+            }
+            
+            if (message.length > MAX_MESSAGE_LENGTH) {
+                showMessage(`Message must be less than ${MAX_MESSAGE_LENGTH} characters.`, 'error');
+                return;
+            }
+            
+            // Email validation (RFC 5322 simplified)
+            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
             if (!emailRegex.test(email)) {
                 showMessage('Please enter a valid email address.', 'error');
                 return;
@@ -323,7 +389,9 @@
         
         function showMessage(text, type) {
             const formMessage = document.getElementById('formMessage');
-            formMessage.textContent = text;
+            // Sanitize message text to prevent XSS
+            const sanitizedText = text.replace(/[<>]/g, ''); // Remove < and > to prevent HTML injection
+            formMessage.textContent = sanitizedText;
             formMessage.className = type === 'success' 
                 ? 'block mb-4 p-4 rounded bg-green-900 text-green-100 border border-green-700' 
                 : 'block mb-4 p-4 rounded bg-red-900 text-red-100 border border-red-700';
