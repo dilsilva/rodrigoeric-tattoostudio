@@ -1,17 +1,34 @@
-// Vercel Serverless Function - Standalone (no site deployment needed)
-// Deploy just this function to Vercel, keep your site on GitHub Pages
+// Vercel Serverless Function - With specific origin CORS (more secure)
+// Use this version if you want to restrict CORS to only your GitHub Pages domain
 
-// Helper function to set CORS headers
-function setCORSHeaders(res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+// Allowed origins - add your domains here
+const ALLOWED_ORIGINS = [
+    'https://dilsilva.github.io',
+    'https://dilsilva.github.io/rodrigoeric-tattoostudio', // If you have a subpath
+    'http://localhost:8000', // For local testing
+];
+
+// Helper function to set CORS headers with origin checking
+function setCORSHeaders(res, origin) {
+    // Check if origin is allowed
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        // Fallback to wildcard if origin not in list (or no origin header)
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
 
 export default async function handler(req, res) {
+    // Get the origin from the request
+    const origin = req.headers.origin || req.headers.referer;
+    
     // Set CORS headers for all responses
-    setCORSHeaders(res);
+    setCORSHeaders(res, origin);
 
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -20,6 +37,7 @@ export default async function handler(req, res) {
 
     // Only allow POST requests
     if (req.method !== 'POST') {
+        res.setHeader('Content-Type', 'application/json');
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
