@@ -282,7 +282,10 @@
             
             // Submit to GitHub Issues via serverless function (token stays secure!)
             // The token is stored in environment variables on the server, not in this code
-            const API_ENDPOINT = 'https://rodrigoeric-tattoostudio-dnbhanift-diegos-projects-1ee3d96e.vercel.app/api/create-issue';// Netlify functions path
+            // Use Vercel's PRODUCTION domain (stable, doesn't change with deployments)
+            // Find it in: Vercel Dashboard → Your Project → Settings → General → Project Name
+            // Format: https://YOUR-PROJECT-NAME.vercel.app/api/create-issue
+            const API_ENDPOINT = 'https://rodrigoeric-tattoostudio.vercel.app/api/create-issue';
             
             // Call our serverless function which securely calls GitHub API
             fetch(API_ENDPOINT, {
