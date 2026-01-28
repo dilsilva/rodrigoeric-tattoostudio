@@ -72,8 +72,6 @@ rodrigoeric-tattoostudio/
 │   └── api/
 │       └── create-issue.js       # GitHub Issues API integration
 ├── .github/
-│   ├── workflows/
-│   │   └── create-issue.yml      # GitHub Actions workflow (backup)
 │   └── dependabot.yml            # Automated security updates
 ├── .gitignore                    # Git ignore rules
 ├── SECURITY.md                   # Security documentation
