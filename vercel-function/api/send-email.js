@@ -98,7 +98,8 @@ export default async function handler(req, res) {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      console.error('Resend API error:', response.status, data);
+      // Log full Resend response for debugging in Vercel → Logs
+      console.error('Resend API error:', response.status, JSON.stringify(data));
       return json(res, 500, { error: 'Failed to send your message. Please try again later.' });
     }
 
