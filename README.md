@@ -1,6 +1,6 @@
 # Rodrigo Eric - Tattoo Studio Website
 
-A modern, professional portfolio website for tattoo artist Rodrigo Eric, featuring a sleek design inspired by high-end tattoo studios like Bang Bang NYC. The site showcases artwork, provides information about the artist, and includes a contact form that automatically creates GitHub Issues for inquiries.
+A modern, professional portfolio website for tattoo artist Rodrigo Eric, featuring a sleek design inspired by high-end tattoo studios like Bang Bang NYC. The site showcases artwork, provides information about the artist, and includes a contact form that sends inquiries to your email (via Resend) and an optional WhatsApp link for direct messaging.
 
 ## 🌐 Live Website
 
@@ -23,14 +23,23 @@ https://dilsilva.github.io/rodrigoeric-tattoostudio/
 ### Sections
 1. **Hero Section**: Full-screen introduction with animated background
 2. **About Section**: Artist information and profile image
-3. **Portfolio Gallery**: Showcase of tattoo work in different styles
-4. **Contact Form**: Secure form that creates GitHub Issues automatically
+3. **Portfolio**: Instagram feed – latest posts from [@rodrigoerictattoo](https://www.instagram.com/rodrigoerictattoo/) (or “View on Instagram” fallback if API not configured)
+4. **Contact Form**: Sends inquiries to your email (Resend) and optional WhatsApp link
 
 ### Contact Form Integration
-- **GitHub Issues Integration**: Form submissions automatically create GitHub Issues
-- **Secure Serverless Function**: Token stored securely in Vercel environment variables
-- **Input Validation**: Client-side and server-side validation
-- **Security**: XSS prevention, input sanitization, security headers
+- **Email via Resend**: Form submissions are sent to your inbox via a Vercel serverless function and [Resend](https://resend.com) (free tier available).
+- **WhatsApp Link**: Optional "Or message us on WhatsApp" link that opens [wa.me](https://wa.me) with a pre-filled message; no backend required. You can also "send this message via WhatsApp" to open WhatsApp with the form content.
+- **Secure Serverless Function**: API key and recipient email stored in Vercel environment variables.
+- **Input Validation**: Client-side and server-side validation; XSS prevention and sanitization.
+
+### Portfolio (Instagram Feed)
+- **Source**: Portfolio section pulls images from your public Instagram feed via [Instagram Graph API](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api).
+- **Fallback**: If the API is not configured or the request fails, the section shows a “View on Instagram” button linking to [@rodrigoerictattoo](https://www.instagram.com/rodrigoerictattoo/).
+- **Caveats** (see [Portfolio setup](#portfolio-instagram-feed-optional) below):
+  - Your Instagram account must be **Business** or **Creator** and linked to a **Facebook Page**.
+  - You need a **Meta Developer** app, an access token, and your **Instagram User ID** (from the Graph API).
+  - **Token expiry**: Long‑lived tokens last ~60 days and must be refreshed (or re-issued) before they expire.
+  - **Rate limits**: The API has rate limits; the site caches the feed response for 5 minutes to reduce calls.
 
 ## 🏗️ Architecture & Implementation
 
@@ -44,13 +53,13 @@ https://dilsilva.github.io/rodrigoeric-tattoostudio/
 
 ### Backend (Vercel Serverless Function)
 - **Serverless Architecture**: Function deployed on Vercel
-- **GitHub API Integration**: Creates issues automatically
-- **Security**: Input validation, sanitization, error handling
-- **CORS**: Properly configured for cross-origin requests
+- **Resend API**: Sends email to your inbox (no GitHub required)
+- **Security**: Input validation, sanitization, error handling, CORS
 
 ### Key Technologies
 - **Hosting**: GitHub Pages (frontend) + Vercel (serverless function)
-- **Form Processing**: Vercel Serverless Function → GitHub Issues API
+- **Form Processing**: Vercel Serverless Function → Resend API → your email
+- **WhatsApp**: Client-side only (wa.me link); no API key needed
 - **Security**: Environment variables, input validation, CSP headers
 - **Animations**: CSS animations + ScrollOut.js
 - **Video**: HTML5 video with parallax scrolling
@@ -70,7 +79,9 @@ rodrigoeric-tattoostudio/
 │   └── divider-1.mp4             # Looping video backgrounds
 ├── vercel-function/              # Serverless function (deployed separately)
 │   └── api/
-│       └── create-issue.js       # GitHub Issues API integration
+│       ├── send-email.js         # Contact form → email via Resend (primary)
+│       ├── instagram-feed.js     # Portfolio: fetch Instagram feed (optional)
+│       └── create-issue.js       # Optional: GitHub Issues integration
 ├── .github/
 │   └── dependabot.yml            # Automated security updates
 ├── .gitignore                    # Git ignore rules
@@ -85,26 +96,25 @@ rodrigoeric-tattoostudio/
 ### User Flow
 1. **User visits website** → GitHub Pages serves static HTML/CSS/JS
 2. **User fills contact form** → Client-side validation
-3. **Form submission** → POST request to Vercel serverless function
-4. **Serverless function** → Validates input, sanitizes data, creates GitHub Issue
-5. **GitHub Issue created** → You receive notification in your repository
+3. **Form submission** → POST to Vercel serverless function
+4. **Serverless function** → Validates input, sanitizes data, sends email via Resend
+5. **Email delivered** → You receive the inquiry in your inbox (reply-to set to sender)
 6. **User sees success message** → Confirmation displayed
+
+**WhatsApp:** User can click "Or message us on WhatsApp" (or "send this message via WhatsApp") to open WhatsApp with a pre-filled message; no server involved.
 
 ### Technical Flow
 ```
 Browser (GitHub Pages)
     ↓
-POST /api/create-issue
+POST /api/send-email
     ↓
 Vercel Serverless Function
-    ├── Input Validation
-    ├── Input Sanitization
+    ├── Input Validation & Sanitization
     ├── Security Headers
-    └── GitHub API Call
+    └── Resend API
         ↓
-GitHub Issues API
-    ↓
-New Issue Created
+Email to CONTACT_EMAIL (reply_to = sender)
 ```
 
 ## 🔧 Setup & Deployment
@@ -138,61 +148,74 @@ New Issue Created
 
 ### Step 2: Deploy Serverless Function (Vercel)
 
-1. **Create Vercel account:**
-   - Go to [vercel.com](https://vercel.com)
-   - Sign up (free tier works)
+1. **Create Vercel account:** [vercel.com](https://vercel.com) (free tier works).
 
-2. **Deploy function:**
-   - Create new project
-   - Upload `vercel-function/` folder
-   - Or connect GitHub repository and deploy
+2. **Deploy:** Create a new project from your repo (or upload the `vercel-function/` folder). Vercel will detect the `api/` folder and deploy serverless functions.
 
-3. **Configure environment variables:**
-   - Go to Project → Settings → Environment Variables
-   - Add:
-     - `GITHUB_TOKEN`: Your fine-grained GitHub token
-     - `GITHUB_OWNER`: Your GitHub username (e.g., `dilsilva`)
-     - `GITHUB_REPO`: Repository name (e.g., `rodrigoeric-tattoostudio`)
+3. **Configure environment variables** (Project → Settings → Environment Variables):
+   - **`RESEND_API_KEY`** (required): API key from [Resend](https://resend.com/api-keys). Create an account, verify your domain (or use `onboarding@resend.dev` for testing), then create an API key.
+   - **`CONTACT_EMAIL`** (required): Email address where inquiries are sent (e.g. your studio inbox).
+   - **`FROM_EMAIL`** (optional): Sender shown in the email. Default: `Rodrigo Eric Studio <onboarding@resend.dev>`. Use your own domain once verified in Resend (e.g. `Studio <contact@yourdomain.com>`).
 
-4. **Get production URL:**
-   - After deployment, note your production URL
-   - Format: `https://YOUR-PROJECT-NAME.vercel.app`
+4. **Get production URL:** After deployment, note the URL (e.g. `https://YOUR-PROJECT-NAME.vercel.app`).
 
-5. **Update HTML:**
-   - Edit `index.html`, line 288
-   - Update `API_ENDPOINT` with your Vercel production URL:
+5. **Update `index.html`:** Set `API_ENDPOINT` to your Vercel URL:
    ```javascript
-   const API_ENDPOINT = 'https://YOUR-PROJECT-NAME.vercel.app/api/create-issue';
+   const API_ENDPOINT = 'https://YOUR-PROJECT-NAME.vercel.app/api/send-email';
    ```
 
-6. **Push update:**
-   ```bash
-   git add index.html
-   git commit -m "Update API endpoint"
-   git push
-   ```
+### Step 3: WhatsApp Link (Optional)
 
-### Step 3: Create GitHub Token
+To show "Or message us on WhatsApp" and "send this message via WhatsApp":
 
-1. **Generate fine-grained token:**
-   - GitHub → Settings → Developer settings → Fine-grained tokens
-   - Generate new token
-   - Repository access: Only `rodrigoeric-tattoostudio`
-   - Permissions:
-     - **Actions**: Read and write
-     - **Contents**: Read-only
-     - **Issues**: Write
-   - Copy token
+1. Edit `index.html` and find the contact section: `<section id="contact" ...>`.
+2. Set **`data-whatsapp-number`** to your WhatsApp number in international format **without** `+` or spaces (e.g. `5511999999999` for Brazil).
+3. Optionally set **`data-whatsapp-default-message`** to the default pre-filled message (e.g. `Hi, I'd like to ask about a tattoo session.`).
 
-2. **Add to Vercel:**
-   - Paste token in Vercel environment variables as `GITHUB_TOKEN`
+If `data-whatsapp-number` is empty, the WhatsApp line is hidden.
 
-### Step 4: Create GitHub Labels (Optional)
+### Portfolio: Instagram feed (optional)
 
-1. Go to repository → Issues → Labels
-2. Create labels:
-   - `inquiry`
-   - `contact-form`
+The portfolio section loads images from your Instagram feed. If you don’t set it up, the section shows a “View on Instagram” button instead.
+
+**Requirements**
+
+- Instagram **Business** or **Creator** account
+- Account linked to a **Facebook Page**
+- [Meta for Developers](https://developers.facebook.com/) app with Instagram product
+
+**Setup**
+
+1. **Create a Meta app**  
+   [developers.facebook.com](https://developers.facebook.com/) → Create App → Use case “Other” → Create app.
+
+2. **Add Instagram**  
+   In the app dashboard: Add Product → Instagram → Set up (Instagram Graph API with Facebook Login).
+
+3. **Get your Instagram User ID**  
+   - Connect your Facebook Page to your Instagram Business/Creator account (in Instagram: Settings → Account → Linked accounts).  
+   - In the Meta app: Instagram → Basic Display or Graph API → use the [Graph API Explorer](https://developers.facebook.com/tools/explorer/) with your Page token, call `GET /me/accounts` to get the Page ID, then `GET /{page-id}?fields=instagram_business_account` to get the **Instagram User ID** (numeric).
+
+4. **Get a long-lived token**  
+   - In Graph API Explorer, get a User access token with `instagram_basic` and `pages_read_engagement` (and `pages_show_list` if needed).  
+   - Exchange it for a long-lived token (see [Meta’s access token docs](https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived)).
+
+5. **Configure Vercel**  
+   In the project’s Environment Variables add:
+   - **`INSTAGRAM_ACCESS_TOKEN`**: your long-lived User access token  
+   - **`INSTAGRAM_USER_ID`**: the Instagram User ID from step 3  
+
+Redeploy the Vercel project so the portfolio API uses the new env vars.
+
+**Caveats**
+
+- **Token expiry**: Long-lived tokens expire in about 60 days. You must refresh (or re-issue) the token before it expires or the feed will stop loading.
+- **Account type**: Personal accounts without Business/Creator + Facebook Page cannot use the Graph API for this; the section will show the “View on Instagram” fallback.
+- **Rate limits**: Instagram/Graph API apply rate limits; the endpoint uses short caching (5 min) to reduce calls.
+
+### Alternative: GitHub Issues
+
+If you prefer form submissions to create GitHub Issues instead of (or in addition to) email, use the existing `create-issue.js` function: set `GITHUB_TOKEN`, `GITHUB_OWNER`, and `GITHUB_REPO` in Vercel, and point `API_ENDPOINT` in `index.html` to `/api/create-issue`.
 
 ## 🎨 Design Features
 
@@ -234,10 +257,10 @@ New Issue Created
 ## 📝 Customization
 
 ### Update Content
-- **Hero text**: Edit `index.html` lines 49-50
-- **About section**: Edit `index.html` lines 83-86
-- **Portfolio items**: Edit `index.html` lines 106-117
-- **Form labels**: Edit `index.html` lines 138-167
+- **Hero text**: Edit `index.html` (header hero-branding)
+- **About section**: Edit `index.html` (about-content)
+- **Portfolio**: Loaded from Instagram feed when configured; otherwise edit the “View on Instagram” fallback in the portfolio section
+- **Form labels**: Edit `index.html` (contact form)
 
 ### Update Images
 - Replace images in `img/` folder
@@ -266,7 +289,7 @@ New Issue Created
 
 ### Backend
 - **Vercel Serverless Functions**: API endpoint
-- **GitHub API**: Issue creation
+- **Resend API**: Email sending (contact form)
 - **Node.js**: Runtime environment
 
 ### Hosting
@@ -304,9 +327,9 @@ New Issue Created
 ## 🔄 Maintenance
 
 ### Regular Tasks
-- Monitor form submissions in GitHub Issues
+- Monitor form submissions in your email (and Resend dashboard if needed)
 - Review function logs in Vercel dashboard
-- Rotate GitHub token every 90 days
+- Rotate Resend API key if needed
 - Update dependencies (Dependabot configured)
 
 ### Updates
@@ -327,11 +350,11 @@ New Issue Created
 2. Check function is deployed correctly
 3. Clear browser cache
 
-### Issues Not Creating
-1. Verify GitHub token has correct permissions
-2. Check token hasn't expired
+### Emails Not Sending
+1. Verify `RESEND_API_KEY` and `CONTACT_EMAIL` are set in Vercel
+2. Check Resend dashboard for bounces or errors
 3. Review Vercel function logs
-4. Ensure labels exist in repository
+4. Ensure `FROM_EMAIL` is a verified domain in Resend (or use `onboarding@resend.dev` for testing)
 
 ## 📄 License
 

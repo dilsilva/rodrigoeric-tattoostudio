@@ -34,24 +34,29 @@
     <script src="https://unpkg.com/scroll-out/dist/scroll-out.min.js"></script>
 </head>
 <body class="bg-black text-white overflow-x-hidden">
-    <!-- Fixed Header Logo -->
-    <header class="fixed-header">
-        <div class="header-logo">
-            <img src="img/logo.PNG" alt="Rodrigo Eric Logo" class="logo-img">
+    <!-- Fixed Header: centered (logo + title + button) in hero, then logo-only bar at top on scroll -->
+    <header class="fixed-header" id="mainHeader">
+        <div class="header-inner">
+            <a href="#hero" class="header-logo" aria-label="Back to top">
+                <img src="img/logo.PNG" alt="Rodrigo Eric Logo" class="logo-img">
+            </a>
+            <div class="hero-branding">
+                <h1 class="hero-title">Rodrigo Eric</h1>
+                <p class="hero-subtitle">tattoo artist</p>
+            </div>
+            <a href="#portfolio" class="hero-cta">View My Work</a>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero h-screen relative flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-black/60 z-10"></div>
-        <div class="hero-bg absolute inset-0 bg-cover bg-center transform scale-110" style="background-image: url('img/background-1.JPG');"></div>
-        <div class="container mx-auto px-6 relative z-20 text-center" style="position: relative; z-index: 20;">
-            <h1 class="text-6xl md:text-8xl font-bold mb-4" data-scroll style="font-size: 3rem; font-weight: bold; margin-bottom: 1rem; color: white;">Rodrigo Eric</h1>
-            <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto" data-scroll style="font-size: 1.25rem; margin-bottom: 2rem; max-width: 42rem; margin-left: auto; margin-right: auto; color: white;">Tattoo Artist</p>
-            <a href="#portfolio" class="btn-primary inline-block" data-scroll style="color: white; text-decoration: none;">View My Work</a>
+    <!-- Hero Section: background only; content is in header above -->
+    <section id="hero" class="hero h-screen relative overflow-hidden">
+        <div class="hero-overlay absolute inset-0 bg-black/60 z-10" aria-hidden="true"></div>
+        <div class="hero-bg-wrap absolute inset-0">
+            <div class="hero-bg hero-bg-a absolute inset-0 bg-cover bg-center" id="heroBgA" role="presentation"></div>
+            <div class="hero-bg hero-bg-b absolute inset-0 bg-cover bg-center" id="heroBgB" role="presentation"></div>
         </div>
-        <div class="absolute bottom-10 left-0 right-0 text-center z-20">
-            <div class="scroll-indicator animate-bounce"></div>
+        <div class="hero-scroll absolute bottom-10 left-0 right-0 text-center z-20">
+            <div class="scroll-indicator animate-bounce" aria-hidden="true"></div>
         </div>
     </section>
 
@@ -75,13 +80,15 @@
 
     <!-- About Section -->
     <section class="about py-20 relative">
-        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-            <div class="about-image" data-scroll>
-                <img src="img/profile.jpeg" alt="Artist" class="rounded-lg shadow-2xl w-full h-auto">
+        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <div class="about-image-wrap reveal-left" data-scroll>
+                <div class="about-image-frame">
+                    <img src="img/profile.jpeg" alt="Rodrigo Eric - Tattoo Artist" class="about-image-img">
+                </div>
             </div>
-            <div class="about-content" data-scroll>
+            <div class="about-content reveal-right" data-scroll>
                 <h2 class="text-4xl font-bold mb-6">About Me</h2>
-                <p class="text-lg mb-4">With over 10 years of experience in the tattoo industry, I specialize in custom black and grey realism, geometric patterns, and Japanese traditional styles.</p>
+                <p class="text-lg mb-4">With over 12 years of experience in the tattoo industry, 4 years based in Brussels, and traveling to Amsterdam every month for work. Turning ideas into art is my purpose — I specialize in custom tattoos through Anime, Realism, Blackwork, Neo Japanese, Neo Traditional, or Fine Line ornaments.</p>
                 <p class="text-lg mb-8">My work has been featured in international tattoo conventions and magazines. I believe every tattoo tells a story and I'm here to help you tell yours.</p>
                 <a href="#contact" class="btn-secondary">Get In Touch</a>
             </div>
@@ -92,28 +99,30 @@
     <section class="video-section">
         <div class="video-background">
             <video autoplay loop muted playsinline class="video-element" onerror="this.style.display='none';">
-                <source src="video/divider-1.mp4" type="video/mp4">
+                <source src="video/divider-2.mp4" type="video/mp4">
             </video>
             <div class="video-overlay"></div>
         </div>
     </section>
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="portfolio py-20 bg-gray-900">
+    <!-- Portfolio Section: Instagram feed (or fallback CTA) -->
+    <section id="portfolio" class="portfolio py-20 relative">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-bold mb-12 text-center" data-scroll>My Portfolio</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="portfolio-item" data-scroll>
-                    <img src="img/IMG_5506.JPG" alt="Tattoo Work 1" class="w-full h-96 object-cover rounded-lg">
-                    <h3 class="text-xl font-bold mt-4">Colorful Neotraditional</h3>
+            <header class="portfolio-header text-center mb-14" data-scroll>
+                <h2 class="text-4xl font-bold mb-4">My Portfolio</h2>
+                <p class="text-gray-400 max-w-xl mx-auto">Latest work from <a href="https://www.instagram.com/rodrigoerictattoo/" target="_blank" rel="noopener noreferrer" class="text-white underline hover:no-underline">@rodrigoerictattoo</a></p>
+            </header>
+            <div id="portfolioFeed" class="portfolio-feed" aria-live="polite">
+                <!-- Loading: shown until feed is fetched -->
+                <div id="portfolioLoading" class="portfolio-loading flex justify-center items-center py-16">
+                    <div class="portfolio-loading-dots" aria-hidden="true"></div>
                 </div>
-                <div class="portfolio-item" data-scroll>
-                    <img src="img/IMG_9856_jpg.JPG" alt="Tattoo Work 2" class="w-full h-96 object-cover rounded-lg">
-                    <h3 class="text-xl font-bold mt-4">Highly Detailed Black & White</h3>
-                </div>
-                <div class="portfolio-item" data-scroll>
-                    <img src="img/IMG_9875.JPG" alt="Tattoo Work 3" class="w-full h-96 object-cover rounded-lg">
-                    <h3 class="text-xl font-bold mt-4">Japanese Traditional</h3>
+                <!-- Grid: filled by JS from Instagram API (or fallback) -->
+                <div id="portfolioGrid" class="portfolio-grid hidden"></div>
+                <!-- Fallback: when API not configured or fails -->
+                <div id="portfolioFallback" class="portfolio-fallback hidden text-center py-12">
+                    <p class="text-gray-400 mb-6">View my latest tattoos and bookings on Instagram.</p>
+                    <a href="https://www.instagram.com/rodrigoerictattoo/" target="_blank" rel="noopener noreferrer" class="btn-secondary inline-block">View on Instagram</a>
                 </div>
             </div>
         </div>
@@ -129,64 +138,127 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact py-20 relative">
-        <div class="container mx-auto px-6 max-w-4xl">
-            <h2 class="text-4xl font-bold mb-12 text-center" data-scroll>Book Your Session</h2>
-            <form class="contact-form grid md:grid-cols-2 gap-6" data-scroll id="contactForm">
-                <div>
-                    <label for="name" class="block mb-2">Name *</label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        required 
-                        maxlength="100"
-                        minlength="1"
-                        autocomplete="name"
-                        class="w-full p-3 bg-gray-800 rounded" 
-                        placeholder="Your name"
-                        aria-required="true"
-                        aria-label="Your full name">
+    <!-- Contact Section: WhatsApp primary, email secondary. Set data-whatsapp-number (e.g. 31628106466) to enable WhatsApp -->
+    <section id="contact" class="contact py-24 relative" data-whatsapp-number="32456540937" data-whatsapp-default-message="Hi, I'd like to ask about a tattoo session.">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <header class="contact-header text-center mb-14" data-scroll>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 tracking-wide">Get in Touch</h2>
+                <p class="text-gray-400 text-lg max-w-xl mx-auto">Fastest way: message on WhatsApp. Prefer email? Send a note below — we’ll get back as soon as possible.</p>
+            </header>
+
+            <!-- Primary CTA: WhatsApp -->
+            <div id="whatsappCard" class="contact-card contact-card-whatsapp mb-8" data-scroll>
+                <div class="contact-card-inner">
+                    <span class="contact-card-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </span>
+                    <div class="contact-card-content">
+                        <h3 class="contact-card-title">Chat on WhatsApp</h3>
+                        <p class="contact-card-desc">Quick replies, share references, and book your session. We usually reply within a few hours.</p>
+                        <a id="whatsappLink" href="#" class="btn-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp to chat">
+                            <span class="btn-whatsapp-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
+                            Message us
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <label for="email" class="block mb-2">Email *</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        required 
-                        maxlength="255"
-                        autocomplete="email"
-                        class="w-full p-3 bg-gray-800 rounded" 
-                        placeholder="your.email@example.com"
-                        aria-required="true"
-                        aria-label="Your email address">
-                </div>
-                <div class="md:col-span-2">
-                    <label for="message" class="block mb-2">Tattoo Idea *</label>
-                    <textarea 
-                        id="message" 
-                        name="message" 
-                        rows="5" 
-                        required 
-                        maxlength="5000"
-                        minlength="10"
-                        class="w-full p-3 bg-gray-800 rounded" 
-                        placeholder="Tell us about your tattoo idea (minimum 10 characters)..."
-                        aria-required="true"
-                        aria-label="Description of your tattoo idea"></textarea>
-                    <p class="text-sm text-gray-400 mt-1">Minimum 10 characters, maximum 5000 characters</p>
-                </div>
-                <div class="md:col-span-2">
-                    <div id="formMessage" class="hidden mb-4 p-4 rounded"></div>
-                </div>
-                <button type="submit" class="btn-primary md:col-span-2">Send Inquiry</button>
-            </form>
+            </div>
+
+            <!-- Divider (hidden when no WhatsApp) -->
+            <p id="contactDivider" class="contact-divider text-center text-gray-500 text-sm uppercase tracking-widest mb-8" data-scroll>or send an email</p>
+
+            <!-- Secondary: Email form -->
+            <div class="contact-card contact-card-email" data-scroll>
+                <form class="contact-form" id="contactForm">
+                    <div class="contact-form-grid">
+                        <div class="contact-field">
+                            <label for="name" class="contact-label">Name</label>
+                            <input type="text" id="name" name="name" required maxlength="100" minlength="1" autocomplete="name" class="contact-input" placeholder="Your name" aria-required="true" aria-label="Your full name">
+                        </div>
+                        <div class="contact-field">
+                            <label for="email" class="contact-label">Email</label>
+                            <input type="email" id="email" name="email" required maxlength="255" autocomplete="email" class="contact-input" placeholder="you@example.com" aria-required="true" aria-label="Your email address">
+                        </div>
+                        <div class="contact-field contact-field-full">
+                            <label for="message" class="contact-label">Your message</label>
+                            <textarea id="message" name="message" rows="4" required maxlength="5000" minlength="10" class="contact-input contact-textarea" placeholder="Tell us about your tattoo idea…" aria-required="true" aria-label="Your message"></textarea>
+                            <p class="contact-hint">Min 10 characters</p>
+                        </div>
+                        <div class="contact-field contact-field-full">
+                            <div id="formMessage" class="contact-message hidden" role="alert"></div>
+                            <button type="submit" class="btn-email">Send message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
 
     <script>
+        // Hero background: smooth crossfade between all images in img/hero/
+        (function() {
+            var HERO_IMAGES = [
+                'img/hero/background-1.JPG',
+                'img/hero/background-2.JPG',
+                'img/hero/background-3.JPG',
+                'img/hero/background-4.JPG',
+                'img/hero/background-5.JPG',
+                'img/hero/background-6.JPG',
+                'img/hero/background-7.JPG',
+                'img/hero/background-8.JPG',
+                'img/hero/background-9.JPG'
+            ];
+            var HERO_DURATION = 6000;   // ms before starting next crossfade
+            var HERO_CROSSFADE_MS = 5000; // must match CSS transition duration
+            var nextIndex = 1;
+            var visibleLayer = 'A';
+
+            function preload(url) {
+                var img = new Image();
+                img.src = url;
+            }
+
+            function runHeroSlideshow() {
+                var elA = document.getElementById('heroBgA');
+                var elB = document.getElementById('heroBgB');
+                if (!elA || !elB) return;
+
+                elA.style.backgroundImage = "url('" + HERO_IMAGES[0] + "')";
+                elB.style.backgroundImage = "url('" + HERO_IMAGES[1] + "')";
+                HERO_IMAGES.forEach(preload);
+
+                function setHiddenLayerBackground(el, index) {
+                    el.style.backgroundImage = "url('" + HERO_IMAGES[index] + "')";
+                }
+
+                setInterval(function() {
+                    if (visibleLayer === 'A') {
+                        elB.classList.add('is-visible');
+                        elA.classList.add('is-hidden');
+                        visibleLayer = 'B';
+                        window.setTimeout(function() {
+                            setHiddenLayerBackground(elA, nextIndex);
+                            nextIndex = (nextIndex + 1) % HERO_IMAGES.length;
+                        }, HERO_CROSSFADE_MS);
+                    } else {
+                        elA.classList.remove('is-hidden');
+                        elA.classList.add('is-visible');
+                        elB.classList.remove('is-visible');
+                        visibleLayer = 'A';
+                        window.setTimeout(function() {
+                            setHiddenLayerBackground(elB, nextIndex);
+                            nextIndex = (nextIndex + 1) % HERO_IMAGES.length;
+                        }, HERO_CROSSFADE_MS);
+                    }
+                }, HERO_DURATION);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', runHeroSlideshow);
+            } else {
+                runHeroSlideshow();
+            }
+        })();
+
         // Ensure content is visible immediately, then enhance with ScrollOut
         document.addEventListener('DOMContentLoaded', function() {
             // Show all content by default
@@ -208,10 +280,27 @@
                 }
             }
             
-            // Logo fade effect on scroll
-            const header = document.querySelector('.fixed-header');
-            const logo = document.querySelector('.logo-img');
+            // Header: smooth transition with scroll (--scroll-progress 0..1, interpolated)
+            const header = document.getElementById('mainHeader');
+            const scrollRange = 420;
             let lastScroll = 0;
+            let smoothProgress = 0;
+            let headerTicking = false;
+            function updateHeaderProgress() {
+                const target = Math.min(1, window.pageYOffset / scrollRange);
+                smoothProgress += (target - smoothProgress) * 0.14;
+                header.style.setProperty('--scroll-progress', smoothProgress);
+                if (smoothProgress >= 0.99) header.classList.add('header-scrolled');
+                else header.classList.remove('header-scrolled');
+                if (Math.abs(smoothProgress - target) > 0.002) requestAnimationFrame(updateHeaderProgress);
+                else headerTicking = false;
+            }
+            function requestHeaderTick() {
+                if (!headerTicking) {
+                    headerTicking = true;
+                    requestAnimationFrame(updateHeaderProgress);
+                }
+            }
             
             // Parallax effect for video sections
             const videoSections = document.querySelectorAll('.video-background');
@@ -253,29 +342,96 @@
             
             window.addEventListener('scroll', function() {
                 const currentScroll = window.pageYOffset;
-                
-                // Fade logo slightly when scrolling down
-                if (currentScroll > 100) {
-                    logo.style.opacity = '0.8';
-                } else {
-                    logo.style.opacity = '1';
-                }
-                
-                // Hide/show header on scroll direction
-                if (currentScroll > lastScroll && currentScroll > 200) {
-                    header.style.opacity = '0.7';
-                } else {
-                    header.style.opacity = '1';
-                }
-                
-                // Update parallax effect (optimized with requestAnimationFrame)
+                requestHeaderTick();
                 requestParallaxTick();
-                
                 lastScroll = currentScroll;
             });
             
-            // Initial parallax calculation
+            // Initial header progress and parallax
+            smoothProgress = Math.min(1, window.pageYOffset / scrollRange);
+            header.style.setProperty('--scroll-progress', smoothProgress);
+            if (smoothProgress >= 0.99) header.classList.add('header-scrolled');
             updateParallax();
+        });
+
+        // Portfolio: fetch Instagram feed and render grid (or show fallback)
+        (function() {
+            var FEED_API = 'https://rodrigoeric-tattoostudio.vercel.app/api/instagram-feed';
+            var loading = document.getElementById('portfolioLoading');
+            var grid = document.getElementById('portfolioGrid');
+            var fallback = document.getElementById('portfolioFallback');
+            if (!loading || !grid || !fallback) return;
+
+            function showLoading() {
+                loading.classList.remove('hidden');
+                grid.classList.add('hidden');
+                fallback.classList.add('hidden');
+            }
+            function showGrid(html) {
+                loading.classList.add('hidden');
+                grid.innerHTML = html;
+                grid.classList.remove('hidden');
+                fallback.classList.add('hidden');
+            }
+            function showFallback() {
+                loading.classList.add('hidden');
+                grid.classList.add('hidden');
+                fallback.classList.remove('hidden');
+            }
+
+            fetch(FEED_API)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.ok && data.feed && data.feed.length > 0) {
+                        var html = data.feed.map(function(item) {
+                            var caption = (item.caption || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            return '<div class="portfolio-item" data-scroll><a href="' + (item.link || '#') + '" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram"><img src="' + (item.thumb || item.url) + '" alt="" loading="lazy">' + (caption ? '<p class="portfolio-caption">' + caption + '</p>' : '') + '</a></div>';
+                        }).join('');
+                        showGrid(html);
+                        if (typeof ScrollOut !== 'undefined') {
+                            try { ScrollOut(); } catch (e) {}
+                        }
+                    } else {
+                        showFallback();
+                    }
+                })
+                .catch(function() {
+                    showFallback();
+                });
+        })();
+
+        // WhatsApp: build wa.me link; hide WhatsApp card if no number; wire "Send this via WhatsApp"
+        document.addEventListener('DOMContentLoaded', function() {
+            const contact = document.getElementById('contact');
+            const whatsappCard = document.getElementById('whatsappCard');
+            const whatsappLink = document.getElementById('whatsappLink');
+            const whatsappSendForm = document.getElementById('whatsappSendForm');
+            if (!contact || !whatsappLink) return;
+            const number = (contact.dataset.whatsappNumber || '').replace(/\D/g, '');
+            const defaultMsg = (contact.dataset.whatsappDefaultMessage || 'Hi, I\'d like to ask about a tattoo session.').trim();
+            if (number.length < 10) {
+                if (whatsappCard) whatsappCard.style.display = 'none';
+                var divider = document.getElementById('contactDivider');
+                if (divider) divider.style.display = 'none';
+                var alt = document.querySelector('.contact-email-alt');
+                if (alt) alt.style.display = 'none';
+                return;
+            }
+            const baseUrl = 'https://wa.me/' + number + '?text=';
+            whatsappLink.href = baseUrl + encodeURIComponent(defaultMsg);
+            if (whatsappSendForm) {
+                whatsappSendForm.classList.remove('hidden');
+                whatsappSendForm.addEventListener('click', function() {
+                    const nameEl = document.getElementById('name');
+                    const emailEl = document.getElementById('email');
+                    const msgEl = document.getElementById('message');
+                    const name = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
+                    const email = (emailEl && emailEl.value) ? emailEl.value.trim() : '';
+                    const msg = (msgEl && msgEl.value) ? msgEl.value.trim() : '';
+                    const text = [name && 'Name: ' + name, email && 'Email: ' + email, msg && 'Message: ' + msg].filter(Boolean).join('\n') || defaultMsg;
+                    window.open(baseUrl + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
+                });
+            }
         });
 
         // Form handling
@@ -346,12 +502,8 @@
                 message: message
             };
             
-            // Submit to GitHub Issues via serverless function (token stays secure!)
-            // The token is stored in environment variables on the server, not in this code
-            // Use Vercel's PRODUCTION domain (stable, doesn't change with deployments)
-            // Find it in: Vercel Dashboard → Your Project → Settings → General → Project Name
-            // Format: https://YOUR-PROJECT-NAME.vercel.app/api/create-issue
-            const API_ENDPOINT = 'https://rodrigoeric-tattoostudio.vercel.app/api/create-issue';
+            // Submit to email via serverless function (Resend). Set RESEND_API_KEY, CONTACT_EMAIL, FROM_EMAIL on Vercel.
+            const API_ENDPOINT = 'https://rodrigoeric-tattoostudio.vercel.app/api/send-email';
             
             // Call our serverless function which securely calls GitHub API
             fetch(API_ENDPOINT, {
@@ -362,12 +514,9 @@
                 body: JSON.stringify(formData)
             })
             .then(async response => {
-                console.log('Response status:', response.status);
                 const data = await response.json();
-                
                 if (response.ok && data.success) {
-                    // Success - issue created
-                    showMessage('Thank you for your inquiry! We\'ll get back to you soon. Issue #' + data.issueNumber + ' has been created.', 'success');
+                    showMessage(data.message || 'Thank you! We\'ll get back to you soon.', 'success');
                     form.reset();
                 } else {
                     // Error from API
@@ -382,28 +531,21 @@
             })
             .finally(() => {
                 submitButton.disabled = false;
-                submitButton.textContent = 'Send Inquiry';
+                submitButton.textContent = 'Send message';
             });
             });
         });
         
         function showMessage(text, type) {
             const formMessage = document.getElementById('formMessage');
-            // Sanitize message text to prevent XSS
-            const sanitizedText = text.replace(/[<>]/g, ''); // Remove < and > to prevent HTML injection
+            const sanitizedText = text.replace(/[<>]/g, '');
             formMessage.textContent = sanitizedText;
-            formMessage.className = type === 'success' 
-                ? 'block mb-4 p-4 rounded bg-green-900 text-green-100 border border-green-700' 
-                : 'block mb-4 p-4 rounded bg-red-900 text-red-100 border border-red-700';
+            formMessage.className = type === 'success'
+                ? 'contact-message block bg-green-900'
+                : 'contact-message block bg-red-900';
             formMessage.classList.remove('hidden');
-            
-            // Scroll to message
             formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                formMessage.classList.add('hidden');
-            }, 5000);
+            setTimeout(function() { formMessage.classList.add('hidden'); }, 5000);
         }
     </script>
 </body>
