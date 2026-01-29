@@ -71,8 +71,8 @@ rodrigoeric-tattoostudio/
 ├── index.html                    # Main HTML file
 ├── style.css                     # Custom styles and animations
 ├── img/                          # Image assets
+│   ├── hero/                     # Hero section background images
 │   ├── logo.PNG                  # Fixed header logo
-│   ├── background-1.JPG          # Hero section background
 │   ├── profile.jpeg              # About section image
 │   └── IMG_*.JPG                 # Portfolio images
 ├── video/                        # Video assets for dividers
@@ -264,7 +264,7 @@ If you prefer form submissions to create GitHub Issues instead of (or in additio
 
 ### Update Images
 - Replace images in `img/` folder
-- Update paths in `index.html`
+- Update paths in `index.html` (including hero images in the HERO_IMAGES array)
 - Recommended formats: JPG for photos, PNG for logos
 
 ### Update Videos

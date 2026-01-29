@@ -1,6 +1,7 @@
 // Vercel Serverless Function - Contact form → email via Resend
-// Sends form submissions to your inbox. No GitHub Issues required.
-// Env: RESEND_API_KEY, CONTACT_EMAIL (recipient), FROM_EMAIL (e.g. "Studio <onboarding@resend.dev>")
+// Env: RESEND_API_KEY, CONTACT_EMAIL (recipient), FROM_EMAIL (optional)
+// Resend: With FROM_EMAIL unset (onboarding@resend.dev) you can only send TO your Resend account email.
+// To send to any address: verify a domain at resend.com/domains and set FROM_EMAIL to that domain (e.g. "Studio <contact@yourdomain.com>").
 
 const RESEND_API = 'https://api.resend.com/emails';
 
