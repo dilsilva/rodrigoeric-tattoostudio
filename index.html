@@ -26,6 +26,7 @@
     <meta name="twitter:description" content="Professional tattoo artist specializing in custom black and grey realism, geometric patterns, and Japanese traditional styles.">
     
     <title>Rodrigo Eric | Tattoo Artist</title>
+    <link rel="icon" href="favicon.ico" sizes="32x32" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -280,14 +281,21 @@
             
             // Header: smooth transition with scroll (--scroll-progress 0..1, interpolated)
             const header = document.getElementById('mainHeader');
+            const logoImg = header ? header.querySelector('.header-logo .logo-img') : null;
             const scrollRange = 420;
-            let lastScroll = 0;
+            const logoHeroH = 280;
+            const logoCollapsedH = 140;
             let smoothProgress = 0;
             let headerTicking = false;
             function updateHeaderProgress() {
                 const target = Math.min(1, window.pageYOffset / scrollRange);
                 smoothProgress += (target - smoothProgress) * 0.14;
                 header.style.setProperty('--scroll-progress', smoothProgress);
+                if (logoImg) {
+                    var h = logoHeroH - (logoHeroH - logoCollapsedH) * smoothProgress;
+                    logoImg.style.height = h + 'px';
+                    logoImg.style.maxHeight = h + 'px';
+                }
                 if (smoothProgress >= 0.99) header.classList.add('header-scrolled');
                 else header.classList.remove('header-scrolled');
                 if (Math.abs(smoothProgress - target) > 0.002) requestAnimationFrame(updateHeaderProgress);
@@ -339,15 +347,18 @@
             }
             
             window.addEventListener('scroll', function() {
-                const currentScroll = window.pageYOffset;
                 requestHeaderTick();
                 requestParallaxTick();
-                lastScroll = currentScroll;
             });
             
             // Initial header progress and parallax
             smoothProgress = Math.min(1, window.pageYOffset / scrollRange);
             header.style.setProperty('--scroll-progress', smoothProgress);
+            if (logoImg) {
+                var h = logoHeroH - (logoHeroH - logoCollapsedH) * smoothProgress;
+                logoImg.style.height = h + 'px';
+                logoImg.style.maxHeight = h + 'px';
+            }
             if (smoothProgress >= 0.99) header.classList.add('header-scrolled');
             updateParallax();
         });
@@ -377,17 +388,28 @@
                 fallback.classList.remove('hidden');
             }
 
+            function isHttpsUrl(s) {
+                if (typeof s !== 'string' || !s.trim()) return false;
+                return s.trim().toLowerCase().indexOf('https://') === 0;
+            }
             fetch(FEED_API)
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     if (data.ok && data.feed && data.feed.length > 0) {
                         var html = data.feed.map(function(item) {
+                            var link = isHttpsUrl(item.link) ? item.link : '#';
+                            var imgSrc = isHttpsUrl(item.thumb) ? item.thumb : (isHttpsUrl(item.url) ? item.url : '');
                             var caption = (item.caption || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                            return '<div class="portfolio-item" data-scroll><a href="' + (item.link || '#') + '" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram"><img src="' + (item.thumb || item.url) + '" alt="" loading="lazy">' + (caption ? '<p class="portfolio-caption">' + caption + '</p>' : '') + '</a></div>';
-                        }).join('');
-                        showGrid(html);
-                        if (typeof ScrollOut !== 'undefined') {
-                            try { ScrollOut(); } catch (e) {}
+                            if (!imgSrc) return '';
+                            return '<div class="portfolio-item" data-scroll><a href="' + link + '" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram"><img src="' + imgSrc + '" alt="" loading="lazy">' + (caption ? '<p class="portfolio-caption">' + caption + '</p>' : '') + '</a></div>';
+                        }).filter(Boolean).join('');
+                        if (html) {
+                            showGrid(html);
+                            if (typeof ScrollOut !== 'undefined') {
+                                try { ScrollOut(); } catch (e) {}
+                            }
+                        } else {
+                            showFallback();
                         }
                     } else {
                         showFallback();
@@ -398,12 +420,11 @@
                 });
         })();
 
-        // WhatsApp: build wa.me link; hide WhatsApp card if no number; wire "Send this via WhatsApp"
+        // WhatsApp: build wa.me link; hide WhatsApp card if no number
         document.addEventListener('DOMContentLoaded', function() {
             const contact = document.getElementById('contact');
             const whatsappCard = document.getElementById('whatsappCard');
             const whatsappLink = document.getElementById('whatsappLink');
-            const whatsappSendForm = document.getElementById('whatsappSendForm');
             if (!contact || !whatsappLink) return;
             const number = (contact.dataset.whatsappNumber || '').replace(/\D/g, '');
             const defaultMsg = (contact.dataset.whatsappDefaultMessage || 'Hi, I\'d like to ask about a tattoo session.').trim();
@@ -411,25 +432,9 @@
                 if (whatsappCard) whatsappCard.style.display = 'none';
                 var divider = document.getElementById('contactDivider');
                 if (divider) divider.style.display = 'none';
-                var alt = document.querySelector('.contact-email-alt');
-                if (alt) alt.style.display = 'none';
                 return;
             }
-            const baseUrl = 'https://wa.me/' + number + '?text=';
-            whatsappLink.href = baseUrl + encodeURIComponent(defaultMsg);
-            if (whatsappSendForm) {
-                whatsappSendForm.classList.remove('hidden');
-                whatsappSendForm.addEventListener('click', function() {
-                    const nameEl = document.getElementById('name');
-                    const emailEl = document.getElementById('email');
-                    const msgEl = document.getElementById('message');
-                    const name = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
-                    const email = (emailEl && emailEl.value) ? emailEl.value.trim() : '';
-                    const msg = (msgEl && msgEl.value) ? msgEl.value.trim() : '';
-                    const text = [name && 'Name: ' + name, email && 'Email: ' + email, msg && 'Message: ' + msg].filter(Boolean).join('\n') || defaultMsg;
-                    window.open(baseUrl + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
-                });
-            }
+            whatsappLink.href = 'https://wa.me/' + number + '?text=' + encodeURIComponent(defaultMsg);
         });
 
         // Form handling

@@ -47,10 +47,9 @@ body {
     color: inherit;
 }
 
-.logo-img {
-    /* Hero 280px, collapsed 30% smaller = 196px; smooth transition with scroll */
+/* Logo height: JS sets inline height so it wins over Tailwind; CSS is fallback before JS runs */
+.fixed-header .header-logo .logo-img {
     height: 280px;
-    height: calc(280px - 84 * var(--scroll-progress, 0));
     width: auto;
     max-width: min(90vw, 380px);
     max-height: 300px;
@@ -130,10 +129,6 @@ body {
 /* When fully collapsed: logo at top, smaller + more transparent; hide text/button */
 .fixed-header.header-scrolled {
     align-items: flex-start;
-}
-
-.fixed-header.header-scrolled .header-logo .logo-img {
-    max-height: 196px; /* 30% smaller than hero (280px × 0.7) */
 }
 
 .fixed-header.header-scrolled .hero-branding,
@@ -596,6 +591,14 @@ section[id] {
     transform: translateX(0) translateY(0);
 }
 
+/* Portfolio stagger on reveal */
+.scroll-out-initialized .portfolio-item-1:not(.scroll-out) { transition-delay: 0s; }
+.scroll-out-initialized .portfolio-item-2:not(.scroll-out) { transition-delay: 0.08s; }
+.scroll-out-initialized .portfolio-item-3:not(.scroll-out) { transition-delay: 0.16s; }
+.portfolio-item-1.scroll-out { transition-delay: 0s; }
+.portfolio-item-2.scroll-out { transition-delay: 0.08s; }
+.portfolio-item-3.scroll-out { transition-delay: 0.16s; }
+
 /* Hero entrance – staggered fade-in on load (header content) */
 .fixed-header .hero-title,
 .fixed-header .hero-subtitle,
@@ -668,9 +671,8 @@ section[id] {
         font-size: 0.85rem;
     }
     
-    .portfolio-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+    .portfolio-item img {
+        height: 16rem; /* Smaller height on mobile */
     }
     
     .hero-bg {

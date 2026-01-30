@@ -32,6 +32,14 @@ function sanitize(text) {
     .replace(/on\w+\s*=/gi, '');
 }
 
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 export default async function handler(req, res) {
   setHeaders(res, securityHeaders);
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -69,11 +77,11 @@ export default async function handler(req, res) {
     const subject = `Tattoo inquiry from ${safeName}`;
     const html = `
       <h2>Contact form – Rodrigo Eric Studio</h2>
-      <p><strong>Name:</strong> ${safeName}</p>
-      <p><strong>Email:</strong> ${safeEmail}</p>
+      <p><strong>Name:</strong> ${escapeHtml(safeName)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(safeEmail)}</p>
       <p><strong>Message:</strong></p>
-      <pre style="white-space: pre-wrap; font-family: inherit;">${safeMessage}</pre>
-      <p><small>Sent from website contact form at ${new Date().toISOString()}</small></p>
+      <pre style="white-space: pre-wrap; font-family: inherit;">${escapeHtml(safeMessage)}</pre>
+      <p><small>Sent from website contact form at ${escapeHtml(new Date().toISOString())}</small></p>
     `.trim();
 
     const controller = new AbortController();
